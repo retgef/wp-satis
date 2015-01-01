@@ -22,32 +22,10 @@ if(file_exists('output/')){
 }
 
 require_once 'lib/WP_Satis_Generator.php';
+$satis = new WP_Satis_Generator();
+
 $yes_map = array('Yes', 'yes', 'y', 'Y');
 $no_map = array('No', 'no', 'n', 'N');
-
-function retrieve_input(){
-	$handle = fopen("php://stdin", 'r');
-	if(!is_resource($handle)){
-		print_line('Could not retrieve input! Please re-run this script.');
-		exit;
-	}
-	return trim(fgets($handle));
-}
-
-function force_input($message, $map = array()){
-	echo $message;
-	$input = retrieve_input();
-	if(!$input || ($map && !in_array($input, $map))){
-		$input = force_input($message, $map);
-	}
-	return $input;
-}
-
-function print_line($line){
-	echo $line.PHP_EOL;
-}
-
-$satis = new WP_Satis_Generator();
 
 $message = 'Enter the title for your Satis WordPress repository: ';
 $satis->set('name', force_input($message));
@@ -99,4 +77,26 @@ if($json){
 }
 else{
 	print_line('Satis config was not generated. Please try again.');
+}
+
+function retrieve_input(){
+	$handle = fopen("php://stdin", 'r');
+	if(!is_resource($handle)){
+		print_line('Could not retrieve input! Please re-run this script.');
+		exit;
+	}
+	return trim(fgets($handle));
+}
+
+function force_input($message, $map = array()){
+	echo $message;
+	$input = retrieve_input();
+	if(!$input || ($map && !in_array($input, $map))){
+		$input = force_input($message, $map);
+	}
+	return $input;
+}
+
+function print_line($line){
+	echo $line.PHP_EOL;
 }
