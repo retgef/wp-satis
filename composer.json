@@ -1,4 +1,12 @@
 {
-	"name": "bfegter/wordpress-satis",
-	"type": "project"
+	"name": "inspectorfegter/wp-satis",
+	"description": "An interactive CLI tool to generate a Satis repository for WordPress releases and branches.",
+	"type": "library",
+	"authors": [
+		{
+			"name": "Brian Fegter",
+			"role": "Developer",
+			"homepage": "http://coderrr.com"
+		}
+	]
 }
