@@ -1,0 +1,102 @@
+#!/usr/bin/php -q
+<?php
+if(!file_exists('satis/')){
+	print_line('\033[31mPlease install Satis first.');
+	print_line('Use the following command to install Satis:');
+	print_line('composer create-project composer/satis --stability=dev');
+	exit;
+}
+
+if(file_exists('output/')){
+	print_line("\033[34mPurging output directory...\033[30m");
+	$it = new RecursiveDirectoryIterator('output', RecursiveDirectoryIterator::SKIP_DOTS);
+	$files = new RecursiveIteratorIterator($it,
+	             RecursiveIteratorIterator::CHILD_FIRST);
+	foreach($files as $file) {
+	    if ($file->isDir()){
+	        rmdir($file->getRealPath());
+	    } else {
+	        unlink($file->getRealPath());
+	    }
+	}
+}
+
+require_once 'lib/WP_Satis_Generator.php';
+$yes_map = array('Yes', 'yes', 'y', 'Y');
+$no_map = array('No', 'no', 'n', 'N');
+
+function retrieve_input(){
+	$handle = fopen("php://stdin", 'r');
+	if(!is_resource($handle)){
+		echo 'boom';
+		exit;
+	}
+	return trim(fgets($handle));
+}
+
+function force_input($message, $map = array()){
+	echo $message;
+	$input = retrieve_input();
+	if(!$input || ($map && !in_array($input, $map))){
+		$input = force_input($message, $map);
+	}
+	return $input;
+}
+
+function print_line($line){
+	echo $line.PHP_EOL;
+}
+
+$satis = new WP_Satis_Generator();
+
+$message = 'Enter the title for your Satis WordPress repository: ';
+$satis->set('name', force_input($message));
+
+$message = 'Enter the URL for your Satis WordPress repository: ';
+$satis->set('homepage', force_input($message));
+
+echo 'Include only specific tags/branches? (comma-separated list) ';
+$satis->set('included_versions', retrieve_input());
+
+echo 'Enable private hosting? ';
+$input = retrieve_input();
+if(in_array($input, $yes_map)){
+    $satis->set('archives', true);
+    
+    $message = 'Enter the CND URL prefix where the archives will be hosted: ';
+    $satis->set('archives_prefix', force_input($message));
+    
+    echo 'Enter the directory name for the archives: (default: dist) ';
+    $input = retrieve_input();
+    $satis->set('archives_dir', $input ? $input : 'dist');
+
+    echo 'Enter the archives file format: (default: zip) (zip|tar) ';
+    $input = retrieve_input();
+    $satis->set('archives_format', $input ? $input : 'zip');
+
+    echo 'Disable archives for branches? ';
+	$input = retrieve_input();
+	$satis->set('archives_skip_dev', $input && in_array($input, $yes_map));
+}
+print_line("\033[34mGenerating Satis config file...\033[30m");
+$json = $satis->build();
+print_line("\033[32mCompleted Satis config generation!\033[30m");
+if($json){
+	file_put_contents('output/satis.json', $json);
+	print_line("\033[34mGenerating Satis repository. Please be patient...\033[30m");
+	$dir = __DIR__;
+	passthru("php {$dir}/satis/bin/satis build {$dir}/output/satis.json {$dir}/output");
+	print_line("\033[32mCompleted Satis repository generation!\033[30m");
+	print_line('You will find your Satis repository at the following path:');
+	print_line("\033[31mYou're almost finished!");
+	print_line("Upload {$dir}/output/ to $satis->homepage to make your repository available for Composer access.");
+	print_line('In your composer.json, add the following under \'repositories\':');
+	$composer = array(
+		'type' => 'composer',
+		'url' => $satis->homepage
+	);
+	print_line(json_encode($composer, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+}
+else{
+	print_line('Satis config was not generated. Please try again.');
+}
