@@ -5,7 +5,7 @@ This project was created due to the lack of support for Composer in WordPress. T
 
 Usage
 ----
-Run `./build` from the command line and follow the prompts.
+Run `./build` or `php build` from the command line and follow the prompts.
 
 Composer Installers
 ----
