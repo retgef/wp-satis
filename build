@@ -28,7 +28,7 @@ $no_map = array('No', 'no', 'n', 'N');
 function retrieve_input(){
 	$handle = fopen("php://stdin", 'r');
 	if(!is_resource($handle)){
-		echo 'boom';
+		print_line('Could not retrieve input! Please re-run this script.');
 		exit;
 	}
 	return trim(fgets($handle));
