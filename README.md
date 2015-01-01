@@ -10,3 +10,7 @@ Run `./build` or `php build` from the command line and follow the prompts.
 Composer Installers
 ----
 Each WordPress package is marked with the type 'wordpress-core'. An installer dependency was left out purposely as some developers prefer to define their own installer plugin. [WordPress Core Installer](https://github.com/johnpbloch/wordpress-core-installer) is compatible with this package type.
+
+Stability
+-----
+This has only been tested on Mac thus far and should be considered unstable at this point.
