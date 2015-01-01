@@ -7,6 +7,6 @@ Usage
 ----
 Run `./build` from the command line and follow the prompts.
 
-Installers
+Composer Installers
 ----
 Each WordPress package is marked with the type 'wordpress-core'. An installer dependency was left out purposely as some developers prefer to define their own installer plugin. [WordPress Core Installer](https://github.com/johnpbloch/wordpress-core-installer) is compatible with this package type.
