@@ -1,7 +1,7 @@
 #!/usr/bin/php -q
 <?php
 if(!file_exists('satis/')){
-	print_line('\033[31mPlease install Satis first.');
+	print_line("\033[31mPlease install Satis first.");
 	print_line('Use the following command to install Satis:');
 	print_line('composer create-project composer/satis --stability=dev');
 	exit;
